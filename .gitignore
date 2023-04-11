@@ -1,5 +1,6 @@
 # Tracked by DVC
 data/census.csv
+data/census_clean.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
