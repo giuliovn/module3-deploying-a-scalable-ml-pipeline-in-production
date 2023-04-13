@@ -6,6 +6,7 @@ import joblib
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from conf.conf import cat_features
 from ml.data import process_data
 from ml.model import compute_model_metrics, inference, train_model
 
@@ -21,22 +22,17 @@ def main(data):
     df = pd.read_csv(data)
     train, test = train_test_split(df, test_size=0.20)
 
-    cat_features = [
-        "workclass",
-        "education",
-        "marital-status",
-        "occupation",
-        "relationship",
-        "race",
-        "sex",
-        "native-country",
-    ]
     X_train, y_train, oh_encoder, label_binarizer = process_data(
         train, categorical_features=cat_features, label="salary", training=True
     )
 
     X_test, y_test, _, _ = process_data(
-        train, categorical_features=cat_features, label="salary", encoder=oh_encoder, lb=label_binarizer, training=False
+        train,
+        categorical_features=cat_features,
+        label="salary",
+        encoder=oh_encoder,
+        lb=label_binarizer,
+        training=False,
     )
 
     log.info("Train")
