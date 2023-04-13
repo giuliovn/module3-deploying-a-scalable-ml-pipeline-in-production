@@ -1,14 +1,13 @@
-# Script to train machine learning model.
 from argparse import ArgumentParser
 import logging
 from pathlib import Path
 
 import joblib
 import pandas as pd
-from sklearn.compose import make_column_transformer
-from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+from ml.data import process_data
+from ml.model import compute_model_metrics, inference, train_model
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,22 +19,11 @@ log = logging.getLogger()
 def main(data):
     log.info(f"Load and process {data}")
     df = pd.read_csv(data)
-    y = LabelEncoder().fit_transform(df["salary"])
-
-    # drop education column (use education-num)
-    df = df.drop(columns=["education", "salary"])
-
-    num_features = [
-        "age",
-        "fnlgt",
-        "education-num",
-        "capital-gain",
-        "capital-loss",
-        "hours-per-week"
-    ]
+    train, test = train_test_split(df, test_size=0.20)
 
     cat_features = [
         "workclass",
+        "education",
         "marital-status",
         "occupation",
         "relationship",
@@ -43,34 +31,30 @@ def main(data):
         "sex",
         "native-country",
     ]
-    transformer = make_column_transformer(
-        (OneHotEncoder(), cat_features),
-        ("passthrough", num_features),
-        remainder="passthrough"
-    )
-    X = transformer.fit_transform(df)
-
-    log.info("Split data")
-    X_train, X_val, y_train, y_val = train_test_split(
-        X, y, test_size=0.20
+    X_train, y_train, oh_encoder, label_binarizer = process_data(
+        train, categorical_features=cat_features, label="salary", training=True
     )
 
-    log.info("Train Logistic Regression")
-    logistic_regression = LogisticRegression(solver="newton-cholesky")
-    logistic_regression.fit(X_train, y_train)
+    X_test, y_test, _, _ = process_data(
+        train, categorical_features=cat_features, label="salary", encoder=oh_encoder, lb=label_binarizer, training=False
+    )
 
-    log.info("Evaluate model")
-    lr_score = logistic_regression.score(X_val, y_val)
-    log.info(f"Score: {lr_score}")
+    log.info("Train")
+    model = train_model(X_train, y_train)
+
+    log.info("Predict on test")
+    y_pred = inference(model, X_test)
+
+    log.info("Evaluate")
+    precision, recall, fbeta = compute_model_metrics(y_test, y_pred)
+
+    log.info(f"Precision: {precision}. Recall: {recall}. Fbeta: {fbeta}")
 
     model_output = Path("model")
-    make_dir(model_output)
-    log.info(f"Save models to {model_output}")
-    joblib.dump(logistic_regression, model_output / "logistic_model.pkl")
-
-
-def make_dir(dir_path):
-    dir_path.mkdir(parents=True, exist_ok=True)
+    model_output.mkdir(parents=True, exist_ok=True)
+    model_path = model_output / "model.pkl"
+    log.info(f"Save models to {model_path}")
+    joblib.dump(model, model_path)
 
 
 if __name__ == "__main__":
