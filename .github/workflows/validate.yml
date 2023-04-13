@@ -48,6 +48,6 @@ jobs:
           poetry install
 
       - name: Test
-        run:
+        run: |
           poetry run dvc pull data/census_clean.csv
           poetry run pytest
