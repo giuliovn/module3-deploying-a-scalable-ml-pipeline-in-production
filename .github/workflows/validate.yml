@@ -57,4 +57,4 @@ jobs:
       - name: Test
         run: |
           poetry run dvc pull data/census_clean.csv
-          poetry run pytest
+          poetry run pytest -v
