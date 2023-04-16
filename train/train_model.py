@@ -27,7 +27,7 @@ def main(data):
     )
 
     X_test, y_test, _, _ = process_data(
-        train,
+        test,
         categorical_features=cat_features,
         label="salary",
         encoder=oh_encoder,
@@ -41,15 +41,47 @@ def main(data):
     log.info("Predict on test")
     y_pred = inference(model, X_test)
 
-    log.info("Evaluate")
+    log.info("Evaluate overall performance")
     precision, recall, fbeta = compute_model_metrics(y_test, y_pred)
 
     log.info(f"Precision: {precision}. Recall: {recall}. Fbeta: {fbeta}")
 
+    log.info("Check performance on data slices")
+    reindex_test = test.reset_index()
+    slice_df = pd.DataFrame(
+        columns=["Feature", "Value", "Count", "Precision", "Recall", "Fbeta"]
+    )
+    for feature in cat_features:
+        for feature_value in reindex_test[feature].unique():
+            log.debug(f"Feature: {feature}. Value: {feature_value}")
+            slice_index = reindex_test[reindex_test[feature] == feature_value].index
+            slice_precision, slice_recall, slice_fbeta = compute_model_metrics(
+                y_test[slice_index], y_pred[slice_index]
+            )
+            log.debug(
+                f"Precision: {slice_precision}. Recall: {slice_recall}. Fbeta: {slice_fbeta}"
+            )
+            slice_df = slice_df._append(
+                {
+                    "Feature": feature,
+                    "Value": feature_value,
+                    "Count": len(slice_index),
+                    "Precision": slice_precision,
+                    "Recall": slice_recall,
+                    "Fbeta": slice_fbeta,
+                },
+                ignore_index=True,
+            )
+
     model_output = Path("model")
     model_output.mkdir(parents=True, exist_ok=True)
+
+    slice_csv_path = model_output / "slice_performance.csv"
+    log.info(f"Save slice performance csv to {slice_csv_path}")
+    slice_df.to_csv(slice_csv_path)
+
     model_path = model_output / "model.pkl"
-    log.info(f"Save models to {model_path}")
+    log.info(f"Save model to {model_path}")
     joblib.dump(model, model_path)
 
 
