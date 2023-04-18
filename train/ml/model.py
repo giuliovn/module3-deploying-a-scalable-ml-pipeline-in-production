@@ -1,5 +1,5 @@
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import fbeta_score, precision_score, recall_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report
 
 
 def train_model(X_train, y_train):
@@ -17,10 +17,7 @@ def train_model(X_train, y_train):
     model
         Trained machine learning model.
     """
-
-    logistic_regression = LogisticRegression(solver="newton-cholesky", max_iter=3000, penalty="l2")
-    logistic_regression.fit(X_train, y_train)
-    return logistic_regression
+    return RandomForestClassifier(n_jobs=-1).fit(X_train, y_train)
 
 
 def compute_model_metrics(y, preds):
@@ -39,14 +36,16 @@ def compute_model_metrics(y, preds):
     recall : float
     fbeta : float
     """
-    fbeta = fbeta_score(y, preds, beta=1, zero_division=1)
-    precision = precision_score(y, preds, zero_division=1)
-    recall = recall_score(y, preds, zero_division=1)
-    return precision, recall, fbeta
+    metrics = classification_report(y, preds, output_dict=True, zero_division=1)
+    return (
+        metrics["weighted avg"]["precision"],
+        metrics["weighted avg"]["recall"],
+        metrics["weighted avg"]["f1-score"],
+    )
 
 
 def inference(model, X):
-    """ Run model inferences and return the predictions.
+    """Run model inferences and return the predictions.
 
     Inputs
     ------

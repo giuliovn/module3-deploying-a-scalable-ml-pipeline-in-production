@@ -76,9 +76,9 @@ def main(data):
     model_output = Path("model")
     model_output.mkdir(parents=True, exist_ok=True)
 
-    slice_csv_path = model_output / "slice_performance.csv"
-    log.info(f"Save slice performance csv to {slice_csv_path}")
-    slice_df.to_csv(slice_csv_path)
+    log.info(f"Save slice performance in {model_output} directory")
+    slice_df.to_csv(model_output / "slice_performance.csv")
+    slice_df.to_html(model_output / "slice_performance.html")
 
     model_path = model_output / "model.pkl"
     log.info(f"Save model to {model_path}")
