@@ -1,4 +1,4 @@
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.metrics import classification_report
 
 
@@ -17,7 +17,7 @@ def train_model(X_train, y_train):
     model
         Trained machine learning model.
     """
-    return RandomForestClassifier(n_jobs=-1).fit(X_train, y_train)
+    return AdaBoostClassifier().fit(X_train, y_train)
 
 
 def compute_model_metrics(y, preds):

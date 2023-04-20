@@ -1,5 +1,5 @@
 import pytest
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import AdaBoostClassifier
 
 from train.ml.model import train_model, inference, compute_model_metrics
 
@@ -10,7 +10,7 @@ def model(train):
 
 
 def test_train_model(model):
-    assert isinstance(model, RandomForestClassifier)
+    assert isinstance(model, AdaBoostClassifier)
 
 
 @pytest.fixture(scope="module", autouse=True)
