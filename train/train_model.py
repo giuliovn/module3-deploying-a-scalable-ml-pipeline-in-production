@@ -80,9 +80,10 @@ def main(data):
     slice_df.to_csv(model_output / "slice_performance.csv")
     slice_df.to_html(model_output / "slice_performance.html")
 
-    model_path = model_output / "model.pkl"
-    log.info(f"Save model to {model_path}")
-    joblib.dump(model, model_path)
+    log.info(f"Save model and encoders to {model_output}")
+    joblib.dump(model, model_output / "model.pkl")
+    joblib.dump(oh_encoder, model_output / "oh_encoder.pkl")
+    joblib.dump(label_binarizer, model_output / "label_binarizer.pkl")
 
 
 if __name__ == "__main__":
