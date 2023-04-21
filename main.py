@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import joblib
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from train.conf.conf import cat_features
 from train.ml.data import process_data
@@ -19,16 +19,16 @@ class Data(BaseModel):
     workclass: list[str]
     fnlgt: list[int]
     education: list[str]
-    education_num: list[int]
-    marital_status: list[str]
+    education_num: list[int] = Field(alias="education-num")
+    marital_status: list[str] = Field(alias="marital-status")
     occupation: list[str]
     relationship: list[str]
     race: list[str]
     sex: list[str]
-    capital_gain: list[int]
-    capital_loss: list[int]
-    hours_per_week: list[int]
-    native_country: list[str]
+    capital_gain: list[int] = Field(alias="capital-gain")
+    capital_loss: list[int] = Field(alias="capital-loss")
+    hours_per_week: list[int] = Field(alias="hours-per-week")
+    native_country: list[str] = Field(alias="native-country")
 
     class Config:
         schema_extra = {
@@ -37,16 +37,16 @@ class Data(BaseModel):
                 "workclass": ["Private", "Never-worked"],
                 "fnlgt": [45781, 206359],
                 "education": ["Masters", "8th"],
-                "education_num": [14, 4],
-                "marital_status": ["Never-married", "Never-married"],
+                "education-num": [14, 4],
+                "marital-status": ["Never-married", "Never-married"],
                 "occupation": ["Prof-specialty", "?"],
                 "relationship": ["Not-in-family", "Own-child"],
                 "race": ["White", "Black"],
                 "sex": ["Male", "Female"],
-                "capital_gain": [14084, 0],
-                "capital_loss": [0, 0],
-                "hours_per_week": [50, 0],
-                "native_country": ["United-States", "Cuba"],
+                "capital-gain": [14084, 0],
+                "capital-loss": [0, 0],
+                "hours-per-week": [50, 0],
+                "native-country": ["United-States", "Cuba"],
             }
         }
 
