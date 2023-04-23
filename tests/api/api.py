@@ -10,7 +10,7 @@ client = TestClient(app)
 def test_greet():
     r = client.get("/")
     assert r.status_code == 200
-    assert r.text == '"Welcome"'  # returned string includes quotes
+    assert r.json() == "Welcome"
 
 
 def test_true_positive():
