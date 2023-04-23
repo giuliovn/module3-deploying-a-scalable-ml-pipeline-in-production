@@ -98,5 +98,8 @@ async def predict(
         lb=label_binarizer_encoder,
     )
     prediction = inference(model, processed_data)
+    print(prediction)
     prediction = [x.item() for x in prediction]  # fastapi doesn't support numpy types
-    return {k: {"Earn more than 50k": bool(v)} for v, k in enumerate(prediction)}
+    print(prediction)
+    print([(v, k) for v, k in enumerate(prediction)])
+    return {v: {"Earn more than 50k": bool(k)} for v, k in enumerate(prediction)}

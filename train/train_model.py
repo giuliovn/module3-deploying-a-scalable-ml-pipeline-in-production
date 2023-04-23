@@ -80,7 +80,7 @@ def main(data):
     slice_df.to_csv(model_output / "slice_performance.csv")
     slice_df.to_html(model_output / "slice_performance.html")
 
-    log.info(f"Save model and encoders to {model_output}")
+    log.info(f"Save model and encoders to {model_output} directory")
     joblib.dump(model, model_output / "model.pkl")
     joblib.dump(oh_encoder, model_output / "oh_encoder.pkl")
     joblib.dump(label_binarizer, model_output / "label_binarizer.pkl")
