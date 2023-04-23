@@ -1,0 +1,30 @@
+build:
+  dockerfile: Dockerfile
+  hooks:
+    - id: install_dependencies
+      path: ./scripts/train_model.sh
+
+services:
+  - type: web
+    name: ud-giuliovn-predict-income
+    env: python
+    repo: https://github.com/ giuliovn/module3-deploying-a-scalable-ml-pipeline-in-production
+    region: oregon
+    plan: free
+    branch: main
+    rootDir: .
+    numInstances: 1
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.8
+      - key: PORT
+        value: 8000
+    startCommand: |
+      pip install -r requirements.txt
+      export $(cat /etc/secrets/AWS_*)
+      dvc pull data/census_clean.csv
+      unset AWS_SECRET_ACCESS_KEY
+      unset AWS_ACCESS_KEY_ID
+      python train/train_model.py data/census_clean.csv
+      python -m uvicorn main:app --host 0.0.0.0 --port 8000

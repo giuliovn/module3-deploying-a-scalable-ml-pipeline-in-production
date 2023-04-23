@@ -1,6 +1,7 @@
 # Tracked by DVC
 data/census.csv
 .github/workflows/census_clean.csv
+model/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
