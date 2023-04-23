@@ -54,10 +54,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.UD_AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Test training
+      - name: Pull data
         run: |
           poetry run dvc pull data/census_clean.csv
+
+      - name: Test training
+        run: |
           poetry run pytest -v tests/model
+
+      - name: Train model to test API
+        run: |
+          poetry run python train/train_model.py data/census_clean.csv
 
       - name: Test API
         run: |

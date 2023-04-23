@@ -16,9 +16,10 @@ services:
         value: 8000
     startCommand: |
       pip install -r requirements.txt
-      export $(cat /etc/secrets/AWS_*)
+      export $(cat /etc/secrets/AWS_CONFIG)
       dvc pull data/census_clean.csv
       unset AWS_SECRET_ACCESS_KEY
       unset AWS_ACCESS_KEY_ID
+      unset AWS_REGION
       python train/train_model.py data/census_clean.csv
       python -m uvicorn main:app --host 0.0.0.0 --port 8000
