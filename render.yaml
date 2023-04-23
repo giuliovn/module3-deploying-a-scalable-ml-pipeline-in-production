@@ -2,7 +2,7 @@ services:
   - type: web
     name: ud-giuliovn-predict-income
     env: python
-    repo: https://github.com/ giuliovn/module3-deploying-a-scalable-ml-pipeline-in-production
+    repo: https://github.com/giuliovn/module3-deploying-a-scalable-ml-pipeline-in-production
     region: oregon
     plan: free
     branch: main
