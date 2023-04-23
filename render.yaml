@@ -1,9 +1,3 @@
-build:
-  dockerfile: Dockerfile
-  hooks:
-    - id: install_dependencies
-      path: ./scripts/train_model.sh
-
 services:
   - type: web
     name: ud-giuliovn-predict-income
