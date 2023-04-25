@@ -51,6 +51,14 @@ class Data(BaseModel):
         }
 
 
+@app.on_event("startup")
+async def startup_event():
+    global model, oh_encoder, label_binarizer_encoder
+    model = joblib.load("./model/model.pkl")
+    oh_encoder = joblib.load("./model/oh_encoder.pkl")
+    label_binarizer_encoder = joblib.load("./model/label_binarizer.pkl")
+
+
 @app.get("/")
 async def greet():
     """
@@ -66,30 +74,18 @@ async def greet():
 @app.post("/predict")
 async def predict(
     data: Data,
-    model_path="model/model.pkl",
-    oh_encoder_path="model/oh_encoder.pkl",
-    label_binarizer_path="model/label_binarizer.pkl",
 ):
     """
     Inputs
     ------
     data : Data object
         Data used for prediction.
-    model_path : str
-        Path to serialized machine learning model.
-    oh_encoder_path: str
-        Path to serialized OneHotEncoder
-    label_binarizer_path: str
-        Path to serialized LabelBinarizer
     Returns
     -------
     preds : dict
         Predictions from the model.
     """
     df = pd.DataFrame(data.dict())
-    model = joblib.load(model_path)
-    oh_encoder = joblib.load(oh_encoder_path)
-    label_binarizer_encoder = joblib.load(label_binarizer_path)
     processed_data, _, _, _ = process_data(
         df,
         categorical_features=list(map(hyphen_to_underscore, cat_features)),
@@ -98,8 +94,5 @@ async def predict(
         lb=label_binarizer_encoder,
     )
     prediction = inference(model, processed_data)
-    print(prediction)
     prediction = [x.item() for x in prediction]  # fastapi doesn't support numpy types
-    print(prediction)
-    print([(v, k) for v, k in enumerate(prediction)])
     return {v: {"Earn more than 50k": bool(k)} for v, k in enumerate(prediction)}

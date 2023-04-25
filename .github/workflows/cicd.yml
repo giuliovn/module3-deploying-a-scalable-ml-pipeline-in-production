@@ -1,4 +1,4 @@
-name: Lint and test
+name: CI/CD
 
 on:
   push:
@@ -69,3 +69,9 @@ jobs:
       - name: Test API
         run: |
           poetry run pytest -v tests/api/api.py
+
+      - name: Deploy to Remder.com
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.RENDER_SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}

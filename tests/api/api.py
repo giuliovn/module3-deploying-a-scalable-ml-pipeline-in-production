@@ -30,7 +30,8 @@ def test_true_positive():
         "hours-per-week": [50],
         "native-country": ["United-States"],
     }
-    r = client.post("/predict", content=json.dumps(data))
+    with TestClient(app) as client:
+        r = client.post("/predict", content=json.dumps(data))
     assert r.status_code == 200
     assert r.json()["0"]["Earn more than 50k"]
 
@@ -52,6 +53,7 @@ def test_true_negative():
         "hours-per-week": [0],
         "native-country": ["Cuba"],
     }
-    r = client.post("/predict", content=json.dumps(data))
+    with TestClient(app) as client:
+        r = client.post("/predict", content=json.dumps(data))
     assert r.status_code == 200
     assert not r.json()["0"]["Earn more than 50k"]

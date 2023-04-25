@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "--endpoint",
         type=str,
         help="API endpoint",
-        default="https://ud-giuliovn-predict-income.onrender.com/predict",
+        default="https://ud-giuliovn-predict-income-c96k.onrender.com/predict",
     )
 
     args = parser.parse_args()
